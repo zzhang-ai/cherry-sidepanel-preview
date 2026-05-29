@@ -1,0 +1,1881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cherry Payments</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --surface-background-subtle: #f2f4f5;
+      --surface-foreground: #ffffff;
+      --on-surface-default: #0e202f;
+      --on-surface-subtle: #56636d;
+      --on-surface-contrast: #ffffff;
+      --surface-separator-subtle: #cfd2d5;
+      --primary-main: #00c37d;
+      --success-subtle: #ccf3e5;
+      --success-contrast: #00754b;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 24px;
+      --space-6: 32px;
+      --radius-2: 8px;
+      --radius-3: 12px;
+      --radius-4: 16px;
+      --radius-5: 24px;
+      --radius-full: 9999px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+      background: #ffffff;
+      color: var(--on-surface-default);
+    }
+
+    .container {
+      width: min(100vw, 440px);
+      min-height: 100vh;
+      padding: var(--space-4) 0;
+      margin: 0 auto;
+      background: var(--surface-foreground);
+    }
+
+    .sidepanel-primary-action {
+      width: calc(100% - 48px);
+      min-height: 56px;
+      margin: 0 var(--space-5) var(--space-6);
+      border: none;
+      border-radius: var(--radius-2);
+      background: var(--primary-main);
+      color: var(--on-surface-contrast);
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 600;
+    }
+
+    .sidepanel-primary-action:hover {
+      background: #009c64;
+    }
+
+    /* Login View */
+    .login-view {
+      display: none;
+    }
+
+    .login-message {
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    /* Form styles */
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #272727;
+      margin-bottom: 4px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 14px;
+      border: 1px solid #DADADA;
+      border-radius: 4px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-input:focus {
+      border-color: #00C37D;
+      box-shadow: 0 0 0 3px rgba(0, 195, 125, 0.1);
+    }
+
+    .form-input::placeholder {
+      color: #9ca3af;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+    }
+
+    .btn-primary {
+      background: #00C37D;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #009C64;
+    }
+
+    .btn-primary:disabled {
+      background: #E7E9EA;
+      color: #56636D;
+      cursor: not-allowed;
+    }
+
+    .btn-primary:focus-visible,
+    .btn-secondary:focus-visible {
+      outline: 2px solid #00C37D;
+      outline-offset: 2px;
+    }
+
+    .btn-secondary {
+      background: white;
+      color: #0E202F;
+      border: 1px solid var(--surface-separator-subtle);
+    }
+
+    .btn-secondary:hover {
+      border-color: #879097;
+      color: #0E202F;
+    }
+
+    .btn-secondary:disabled {
+      color: #56636D;
+      border-color: #CFD2D5;
+      cursor: not-allowed;
+    }
+
+    /* User View */
+    .user-view {
+      display: none;
+    }
+
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: #f9fafb;
+      border-radius: 4px;
+      margin-bottom: 16px;
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #00C37D;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .user-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .user-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0E202F;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-email {
+      font-size: 13px;
+      color: #6b7280;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Status */
+    .status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px 12px;
+      background: #ffffff;
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+
+    .settings-view .status-row {
+      margin-bottom: 12px;
+    }
+
+    .status-label {
+      font-size: 14px;
+      color: #6b7280;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .status-badge.active {
+      background: #CCF3E5;
+      color: #00754B;
+    }
+
+    .status-badge.inactive {
+      background: #FDEBEF;
+      color: #D42E56;
+    }
+
+    .status-badge.none {
+      background: #E7E9EA;
+      color: #56636D;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .status-dot.active {
+      background: #00C37D;
+    }
+
+    .status-dot.inactive {
+      background: #D42E56;
+    }
+
+    .status-dot.none {
+      background: #9ca3af;
+    }
+
+    .status-badge.warning {
+      background: #FFF1C5;
+      color: #92400e;
+    }
+
+    .status-dot.warning {
+      background: #FFD557;
+    }
+
+    /* Error */
+    .error-message {
+      display: none;
+      padding: 12px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 4px;
+      color: #991b1b;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+
+    /* Loading */
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid #E8E8EA;
+      border-top-color: #00C37D;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 12px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+
+    /* Terminal info icon */
+    #terminal-info {
+      position: relative;
+      color: #9ca3af;
+      font-size: 13px;
+      cursor: help;
+      margin-left: 2px;
+    }
+
+    #terminal-info::after {
+      content: 'Restart any terminals to get them online';
+      position: absolute;
+      bottom: 100%;
+      right: 0;
+      background: #272727;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 400;
+      padding: 4px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s;
+      margin-bottom: 4px;
+    }
+
+    #terminal-info:hover::after {
+      opacity: 1;
+    }
+
+    /* Terminal selector */
+    #terminal-display {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      font-size: 13px;
+      min-width: 0;
+    }
+
+    #terminal-name {
+      color: #272727;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+      min-width: 0;
+    }
+
+    #terminal-action {
+      color: #00C37D;
+      font-size: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    #terminal-action:hover {
+      text-decoration: underline;
+    }
+
+    #terminal-action.disabled {
+      color: #9ca3af;
+      pointer-events: none;
+    }
+
+    #terminal-select {
+      flex: 1;
+    }
+
+    #terminal-error {
+      color: #C91D1D;
+      font-size: 12px;
+      display: block;
+      margin-top: 4px;
+    }
+
+    /* Refund */
+    .refund-btn {
+      display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px;
+      font-size: 11px; font-weight: 600; color: #56636D; background: transparent;
+      border: 1px solid #CFD2D5; border-radius: 4px; cursor: pointer; transition: all 0.15s;
+    }
+    .refund-btn:hover { background: #E7E9EA; border-color: #879097; }
+    .refund-btn:disabled { background: #E7E9EA; color: #56636D; cursor: not-allowed; }
+    .refund-inline {
+      margin-top: 8px; padding: 10px; background: #fff7ed;
+      border: 1px solid #fed7aa; border-radius: 4px;
+    }
+    .refund-inline .refund-type-row { display: flex; gap: 8px; margin-bottom: 8px; }
+    .refund-inline .refund-type-btn {
+      flex: 1; padding: 6px 0; font-size: 12px; font-weight: 500; text-align: center;
+      border: 1px solid #DADADA; border-radius: 4px; background: white; color: #272727;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .refund-inline .refund-type-btn.selected { border-color: #EC3360; background: #fde8ef; color: #EC3360; }
+    .refund-inline .refund-amount-input {
+      width: 100%; padding: 8px 10px; font-size: 13px; border: 1px solid #DADADA;
+      border-radius: 4px; margin-bottom: 8px; outline: none;
+    }
+    .refund-inline .refund-amount-input:focus { border-color: #EC3360; box-shadow: 0 0 0 2px rgba(236,51,96,0.1); }
+    .refund-inline .refund-actions { display: flex; gap: 8px; }
+    .refund-inline .refund-confirm-btn {
+      flex: 1; padding: 8px; font-size: 12px; font-weight: 600; color: white;
+      background: #EC3360; border: none; border-radius: 4px; cursor: pointer;
+    }
+    .refund-inline .refund-confirm-btn:disabled { background: #E7E9EA; color: #56636D; cursor: not-allowed; }
+    .refund-inline .refund-cancel-btn {
+      flex: 1; padding: 8px; font-size: 12px; font-weight: 600; color: #272727;
+      background: #E8E8EA; border: none; border-radius: 4px; cursor: pointer;
+    }
+    .refund-status {
+      margin-top: 8px; padding: 8px 10px; border-radius: 4px; font-size: 12px;
+    }
+    .refund-status.processing { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; }
+    .refund-status.success { background: #CCF3E5; border: 1px solid #99E6C9; color: #00754B; }
+    .refund-status.error { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+    .refund-status.warning { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+
+    /* Payment history */
+    .payment-history {
+      margin-top: 0;
+      padding: var(--space-6) var(--space-5);
+      border-radius: var(--radius-5);
+      background: var(--surface-background-subtle);
+      height: calc(100vh - 120px);
+      min-height: 520px;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .payment-history-topbar {
+      display: none;
+      align-items: center;
+      gap: 12px;
+      min-height: 32px;
+      margin-bottom: 24px;
+    }
+
+    .payment-history-back {
+      width: 32px;
+      height: 32px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      color: #0E202F;
+      cursor: pointer;
+    }
+
+    .payment-history-back svg {
+      width: 24px;
+      height: 24px;
+      color: #3E4D59;
+    }
+
+    .payment-history-back:hover {
+      background: #E7E9EA;
+    }
+
+    .payment-history-title {
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 24px;
+      color: #0E202F;
+      flex: 1;
+    }
+
+    .payment-history-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      padding: 0 6px;
+      background: var(--on-surface-default);
+      color: var(--on-surface-contrast);
+      font-size: 12px;
+      line-height: 20px;
+      font-weight: 400;
+    }
+
+    .payment-history-help {
+      margin: 0;
+      color: #56636D;
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .payment-action-section {
+      margin-bottom: 0;
+    }
+
+    .payment-action-header {
+      flex: 0 0 auto;
+      margin-bottom: 24px;
+    }
+
+    .payment-action-title {
+      margin: 0 0 32px;
+      color: var(--on-surface-default);
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 28px;
+      letter-spacing: -0.08px;
+    }
+
+    .payment-action-tabs {
+      display: flex;
+      align-items: flex-start;
+      gap: 32px;
+      height: 43px;
+      border-bottom: 1px solid var(--surface-separator-subtle);
+      position: relative;
+      --payment-action-indicator-x: 0px;
+      --payment-action-indicator-width: 0px;
+    }
+
+    .payment-action-tabs::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: var(--payment-action-indicator-width);
+      height: 3px;
+      border-radius: var(--radius-full);
+      background: var(--on-surface-default);
+      transform: translateX(var(--payment-action-indicator-x));
+      transition:
+        transform 280ms cubic-bezier(0.4, 0, 0.2, 1),
+        width 280ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .payment-action-tab {
+      position: relative;
+      height: 43px;
+      padding: 0 0 16px;
+      border: none;
+      background: transparent;
+      color: var(--on-surface-subtle);
+      cursor: pointer;
+      font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 24px;
+      letter-spacing: 0;
+      transition: color 180ms ease-in-out;
+    }
+
+    .payment-action-tab.is-active {
+      color: var(--on-surface-default);
+    }
+
+    .payment-action-tab:focus {
+      outline: none;
+    }
+
+    .payment-action-tab:focus-visible {
+      outline: none;
+    }
+
+    #payment-history-actions-view {
+      flex: 1 1 auto;
+      min-height: 0;
+      flex-direction: column;
+      position: relative;
+    }
+
+    #payment-history-action-content {
+      flex: 1 1 auto;
+      min-height: 0;
+      padding-bottom: 144px;
+      overflow-y: auto;
+      scrollbar-width: none;
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 180ms ease-in-out, transform 180ms ease-in-out;
+      will-change: opacity, transform;
+    }
+
+    #payment-history-action-content.is-transitioning {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+
+    #payment-history-action-content::-webkit-scrollbar {
+      display: none;
+    }
+
+    #payment-history-all-view {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+
+    #payment-history-all-view::-webkit-scrollbar {
+      display: none;
+    }
+
+    .payment-action-section-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      color: var(--on-surface-default);
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 28px;
+      letter-spacing: -0.08px;
+    }
+
+    .payment-action-description {
+      margin: 0 0 16px;
+      color: var(--on-surface-subtle);
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+
+    .payment-history-empty {
+      min-height: 447px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      text-align: center;
+      color: #56636D;
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .payment-history-empty-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--success-subtle);
+      color: var(--success-contrast);
+    }
+
+    .payment-history-empty-icon svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .payment-history-empty-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .payment-history-empty-title {
+      color: var(--on-surface-default);
+      font-size: 20px;
+      line-height: 28px;
+      font-weight: 700;
+      letter-spacing: -0.08px;
+    }
+
+    .payment-history-empty-text {
+      color: var(--on-surface-subtle);
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 400;
+    }
+
+    .payment-history-empty .payment-card-button {
+      align-self: center;
+      background: transparent;
+    }
+
+    .payment-history-link-list {
+      position: absolute;
+      right: calc(var(--space-5) * -1);
+      bottom: calc(var(--space-6) * -1);
+      left: calc(var(--space-5) * -1);
+      height: 144px;
+      padding: var(--space-6) var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      z-index: 2;
+      box-sizing: border-box;
+      background: linear-gradient(
+        180deg,
+        rgba(242, 244, 245, 0) 0%,
+        rgba(242, 244, 245, 1) 100%
+      );
+      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(4px);
+    }
+
+    .payment-history-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      min-height: 40px;
+      border: none;
+      padding: 8px 0;
+      background: transparent;
+      color: #0E202F;
+      cursor: pointer;
+      text-align: left;
+      font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 24px;
+      letter-spacing: 0;
+    }
+
+    .payment-history-link-icon {
+      width: 20px;
+      height: 20px;
+      color: #56636D;
+      flex: 0 0 auto;
+    }
+
+    .payment-history-link-chevron {
+      margin-left: auto;
+      color: #56636D;
+      width: 20px;
+      height: 20px;
+      flex: 0 0 auto;
+    }
+
+    .payment-history-link-chevron svg {
+      display: block;
+      width: 20px;
+      height: 20px;
+    }
+
+    .payment-history-summary {
+      margin: 0 0 24px;
+    }
+
+    .payment-history-period-wrap {
+      position: relative;
+      width: 112px;
+    }
+
+    .payment-history-period {
+      width: 112px;
+      height: 34px;
+      padding: 0 34px 0 14px;
+      border: 1.5px solid #CFD2D5;
+      border-radius: 999px;
+      background: #fff;
+      color: #0E202F;
+      font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 400;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .payment-history-period-wrap::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 14px;
+      width: 7px;
+      height: 7px;
+      border-right: 1.5px solid #56636D;
+      border-bottom: 1.5px solid #56636D;
+      pointer-events: none;
+      transform: translateY(-65%) rotate(45deg);
+    }
+
+    .payment-history-total {
+      margin-top: 24px;
+      color: #0E202F;
+      font-size: 36px;
+      line-height: 40px;
+      font-weight: 700;
+    }
+
+    .payment-history-total-label {
+      margin-top: 4px;
+      color: #56636D;
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .payment-card {
+      background: var(--surface-foreground);
+      border-radius: var(--radius-3);
+      padding: var(--space-4);
+      margin-bottom: 16px;
+      min-height: 80px;
+      max-height: 240px;
+      overflow: hidden;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      transition:
+        opacity 180ms ease,
+        transform 180ms ease,
+        max-height 240ms ease,
+        min-height 240ms ease,
+        margin-bottom 240ms ease,
+        padding-top 240ms ease,
+        padding-bottom 240ms ease;
+    }
+
+    .payment-card.is-removing {
+      min-height: 0;
+      max-height: 0;
+      margin-bottom: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      opacity: 0;
+      transform: translateY(-8px) scale(0.98);
+      pointer-events: none;
+    }
+
+    .payment-card-summary {
+      cursor: pointer;
+    }
+
+    .payment-card-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .payment-card-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .payment-card-amount-line {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .payment-card-amount {
+      color: #0E202F;
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 28px;
+      letter-spacing: -0.08px;
+      white-space: nowrap;
+    }
+
+    .payment-card-note {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+      color: #56636D;
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+
+
+    .payment-card-context {
+      margin-top: 8px;
+      font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+      color: #56636D;
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 400;
+      letter-spacing: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .payment-card-context-name {
+      font-weight: 600;
+    }
+
+    .payment-card-method-ref {
+      margin-top: 4px;
+      font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+      color: #56636D;
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 400;
+      letter-spacing: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .payment-card-chevron {
+      color: #56636D;
+      width: 20px;
+      height: 20px;
+      flex: 0 0 auto;
+      transition: transform 0.2s;
+    }
+
+    .payment-card-chevron svg {
+      display: block;
+      width: 20px;
+      height: 20px;
+    }
+
+    .payment-card-detail {
+      display: none;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #E7E9EA;
+    }
+
+    .payment-card-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .payment-card-sync-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      min-width: 0;
+    }
+
+    .payment-card-action-link {
+      color: #00A86B;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .payment-card-button {
+      flex: 0 0 auto;
+      height: 36px;
+      padding: 0 16px;
+      border: 1px solid var(--surface-separator-subtle);
+      border-radius: var(--radius-3);
+      background: var(--surface-foreground);
+      color: var(--on-surface-default);
+      cursor: pointer;
+      font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 400;
+      white-space: nowrap;
+    }
+
+    .payment-card-button:hover {
+      border-color: #879097;
+    }
+
+    .mark-synced-btn.payment-card-button,
+    .mark-preview-posted.payment-card-button {
+      transition:
+        transform 120ms ease-in-out,
+        border-color 120ms ease-in-out,
+        background-color 120ms ease-in-out;
+    }
+
+    .mark-synced-btn.payment-card-button:active,
+    .mark-preview-posted.payment-card-button:active {
+      transform: translateY(1px) scale(0.97);
+      background: #F7F8F8;
+      border-color: #879097;
+    }
+
+    .payment-posted-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 24px;
+      padding: 4px 8px;
+      border-radius: var(--radius-full);
+      background: var(--success-subtle);
+      color: var(--success-contrast);
+      font-size: 12px;
+      line-height: 16px;
+      font-weight: 400;
+      letter-spacing: 0.04px;
+      white-space: nowrap;
+    }
+
+    .payment-card-secondary-link {
+      color: #56636D;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .payment-toast {
+      position: fixed;
+      left: 50%;
+      bottom: 40px;
+      z-index: 1000;
+      width: calc(100% - 32px);
+      max-width: 408px;
+      min-height: 68px;
+      padding: 16px;
+      border-radius: 12px;
+      background: #0E202F;
+      color: #FFFFFF;
+      box-shadow: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 400;
+      opacity: 0;
+      transform: translate(-50%, 12px);
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    .payment-toast.is-visible {
+      opacity: 1;
+      transform: translate(-50%, 0);
+      pointer-events: auto;
+    }
+
+    .payment-toast-message {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .payment-toast button {
+      flex: 0 0 auto;
+      height: 36px;
+      min-width: 69px;
+      padding: 8px 16px;
+      border: 1px solid #FFFFFF;
+      border-radius: 8px;
+      background: transparent;
+      color: #FFFFFF;
+      cursor: pointer;
+      font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .payment-status-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 700;
+    }
+
+    .payment-status-badge.is-hidden-summary {
+      display: none;
+    }
+
+    .payment-tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 20px;
+      padding: 1px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #E8EEF1;
+      color: #415058;
+      white-space: nowrap;
+    }
+
+    /* Payment status filter dropdown */
+    .payment-filter-select {
+      padding: 8px 10px; font-size: 13px; font-weight: 600;
+      border: 1px solid #CFD2D5; border-radius: 999px;
+      background: white; color: #272727; cursor: pointer;
+      outline: none; appearance: auto;
+    }
+    .payment-filter-select { flex: 1; min-width: 0; }
+    .payment-filter-select:focus { border-color: #00C37D; box-shadow: 0 0 0 2px rgba(0,195,125,0.1); }
+
+    /* Reconciliation */
+    .recon-select {
+      padding: 4px 8px; font-size: 12px; font-weight: 500;
+      border: 1px solid #E8E8EA; border-radius: 4px;
+      background: white; color: #272727; cursor: pointer;
+      outline: none; appearance: auto;
+    }
+    .recon-select:focus { border-color: #00C37D; box-shadow: 0 0 0 2px rgba(0,195,125,0.1); }
+
+    /* Section tabs */
+    .section-tabs {
+      display: flex; border-bottom: 2px solid #E8E8EA; margin-bottom: 12px;
+    }
+    .section-tab {
+      padding: 8px 16px; font-size: 13px; font-weight: 600; color: #707070;
+      background: none; border: none; border-bottom: 2px solid transparent;
+      margin-bottom: -2px; cursor: pointer; transition: all 0.15s;
+    }
+    .section-tab:hover { color: #272727; }
+    .section-tab.active { color: #00C37D; border-bottom-color: #00C37D; }
+    .section-tab-content { display: none; }
+    .section-tab-content.active { display: block; }
+
+    /* Retry / writeback buttons (used by payment-history-manager and sidebar-refund-manager) */
+    .refund-retry-btn {
+      display: block; margin-top: 6px; padding: 6px 12px; font-size: 11px; font-weight: 600;
+      color: #272727; background: #EBC075; border: none; border-radius: 4px;
+      cursor: pointer; width: 100%;
+    }
+    .retry-instruction {
+      margin-top: 6px; padding: 8px; background: #fffbeb; border: 1px solid #fde68a;
+      border-radius: 4px; font-size: 11px; color: #92400e;
+    }
+    .retry-instruction.ready {
+      background: #CCF3E5; border-color: #86efac; color: #00754B;
+    }
+    .write-to-pms-btn {
+      margin-top: 6px; padding: 6px 12px; font-size: 11px; font-weight: 500;
+      border: none; border-radius: 4px; width: 100%;
+    }
+    .write-to-pms-btn:disabled {
+      background: #E7E9EA !important; color: #56636D !important; cursor: not-allowed;
+    }
+    .write-to-pms-btn:not(:disabled) {
+      background: #00C37D; color: white; cursor: pointer;
+    }
+
+    /* API Key Banner */
+    .api-key-banner {
+      display: none;
+      padding: 12px;
+      background: #fef3c7;
+      border: 1px solid #fde68a;
+      border-radius: 4px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .api-key-banner-text {
+      font-size: 13px;
+      color: #92400e;
+      line-height: 1.4;
+      margin-bottom: 8px;
+      padding-right: 20px;
+    }
+    .api-key-banner-dismiss {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: none;
+      border: none;
+      color: #92400e;
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
+      padding: 0;
+      opacity: 0.6;
+    }
+    .api-key-banner-dismiss:hover { opacity: 1; }
+    .api-key-input-row {
+      display: flex;
+      gap: 8px;
+    }
+    .api-key-input-row .form-input {
+      flex: 1;
+      padding: 8px 10px;
+      font-size: 13px;
+    }
+    .api-key-input-row .btn {
+      width: auto;
+      padding: 8px 16px;
+      font-size: 13px;
+    }
+    .api-key-success {
+      display: none;
+      font-size: 12px;
+      color: #00754B;
+      margin-top: 6px;
+    }
+    /* Settings View */
+    .settings-view {
+      display: none;
+      min-height: 100vh;
+      background: var(--surface-foreground);
+    }
+    .settings-panel {
+      min-height: calc(100vh - 32px);
+      margin: var(--space-4) 0;
+      padding: 36px var(--space-5) var(--space-6);
+      border-radius: var(--radius-5);
+      background: var(--surface-background-subtle);
+      display: flex;
+      flex-direction: column;
+    }
+    .settings-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      min-height: 32px;
+      margin-bottom: var(--space-6);
+    }
+    .settings-back {
+      width: 24px;
+      height: 24px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: #3E4D59;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .settings-back:hover { color: #0E202F; }
+    .settings-back svg {
+      width: 24px;
+      height: 24px;
+    }
+    .settings-title {
+      font-size: 20px;
+      line-height: 28px;
+      font-weight: 700;
+      letter-spacing: -0.08px;
+      color: #0E202F;
+    }
+    .settings-section {
+      margin-bottom: var(--space-6);
+    }
+    .settings-section.connection-section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-6);
+    }
+    .settings-label {
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 400;
+      color: var(--on-surface-subtle);
+      margin-bottom: 4px;
+      display: block;
+    }
+    .settings-data {
+      color: var(--on-surface-default);
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 400;
+    }
+    .settings-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .settings-field-main {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 24px;
+    }
+    .settings-field-link {
+      color: var(--success-contrast);
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .settings-field .status-badge {
+      padding: 0;
+      background: transparent;
+      color: var(--on-surface-default);
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 400;
+    }
+    .settings-field .status-dot {
+      display: none;
+    }
+    .settings-field #terminal-display {
+      font-size: 16px;
+      line-height: 24px;
+      gap: 8px;
+    }
+    .settings-field #terminal-name {
+      color: var(--on-surface-default);
+      font-weight: 400;
+    }
+    .settings-field #terminal-action {
+      color: var(--success-contrast);
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 700;
+    }
+    .settings-field #terminal-select {
+      width: 100%;
+      min-height: 40px;
+      padding: 8px 40px 8px 12px;
+      border: 1px solid var(--surface-separator-subtle);
+      border-radius: var(--radius-3);
+      background-color: var(--surface-foreground);
+      background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 7.5L10 12.5L15 7.5' stroke='%2356636D' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 20px 20px;
+      color: var(--on-surface-default);
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 400;
+      appearance: none;
+      cursor: pointer;
+    }
+    .settings-field #terminal-select:focus {
+      border-color: var(--primary-main);
+      box-shadow: 0 0 0 2px rgba(0, 195, 125, 0.1);
+      outline: none;
+    }
+    .settings-field .api-key-input-row {
+      margin-top: 4px;
+    }
+    .settings-account-footer {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+      align-items: stretch;
+    }
+    .settings-account-footer .btn {
+      min-height: 56px;
+      border-radius: var(--radius-3);
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 600;
+      background: transparent;
+    }
+    .settings-version {
+      color: var(--on-surface-subtle);
+      font-size: 12px;
+      line-height: 16px;
+      letter-spacing: 0.04px;
+      text-align: center;
+    }
+    .settings-toggle-row {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+      border-top: 1px solid #e5e7eb;
+    }
+    .settings-toggle-copy { flex: 1; }
+    .settings-toggle-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #272727;
+    }
+    .settings-toggle-description {
+      margin-top: 2px;
+      font-size: 12px;
+      line-height: 16px;
+      color: #6b7280;
+    }
+    .settings-switch {
+      position: relative;
+      display: inline-flex;
+      width: 38px;
+      height: 22px;
+      flex: 0 0 auto;
+    }
+    .settings-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .settings-switch-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: #d1d5db;
+      border-radius: 999px;
+      transition: background 0.15s ease;
+    }
+    .settings-switch-slider::before {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      left: 2px;
+      top: 2px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.15s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+    .settings-switch input:checked + .settings-switch-slider { background: #00C37D; }
+    .settings-switch input:checked + .settings-switch-slider::before { transform: translateX(16px); }
+    .api-key-display {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0;
+      background: transparent;
+      border-radius: 0;
+      font-size: 16px;
+      line-height: 24px;
+      color: var(--on-surface-default);
+    }
+    .api-key-display-value {
+      flex: 1;
+      font-family: monospace;
+    }
+    .api-key-display-actions {
+      display: flex;
+      gap: 6px;
+    }
+    .api-key-display-actions button {
+      background: none;
+      border: none;
+      color: #00C37D;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 2px 4px;
+    }
+    .api-key-display-actions button:hover { text-decoration: underline; }
+    .api-key-display-actions button.danger { color: #EC3360; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Error Message -->
+    <div id="error-message" class="error-message"></div>
+
+    <!-- Loading State -->
+    <div id="loading" class="loading">
+      <div class="spinner"></div>
+      <div class="loading-text">Loading...</div>
+    </div>
+
+    <!-- Login View -->
+    <div id="login-view" class="login-view">
+      <p class="login-message">
+        Sign in with your Cherry account to enable payment processing.
+      </p>
+      <button id="sign-in-btn" class="btn btn-primary">
+        Sign In with Cherry
+      </button>
+    </div>
+
+    <!-- User View (logged in) -->
+    <div id="user-view" class="user-view">
+      <!-- Debug Mode Banner -->
+      <div id="debug-banner" style="display: none; background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 8px 12px; margin-bottom: 12px; text-align: center;">
+        <span style="font-size: 13px; font-weight: 600; color: #92400e;">DEBUG MODE</span>
+        <span style="font-size: 11px; color: #92400e; display: block; margin-top: 2px;">Offline terminals enabled. Payments tagged as debug.</span>
+      </div>
+      <!-- Debug API Activity Log -->
+      <div id="debug-api-log" style="display: none; margin-bottom: 12px;">
+        <div id="debug-api-log-header" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px 8px 0 0; cursor: pointer;">
+          <span style="font-size: 13px; font-weight: 600; color: #92400e;">API Activity (<span id="debug-api-log-count">0</span>)</span>
+          <div>
+            <button id="debug-api-log-clear" style="font-size: 11px; color: #92400e; background: none; border: none; cursor: pointer; padding: 0 4px;">Clear</button>
+            <span id="debug-api-log-toggle" style="font-size: 11px; color: #92400e;">&#9660;</span>
+          </div>
+        </div>
+        <div id="debug-api-log-entries" style="display: none; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px; max-height: 300px; overflow-y: auto;"></div>
+      </div>
+      <!-- API Key Banner -->
+      <div id="api-key-banner" class="api-key-banner">
+        <button id="api-key-banner-dismiss" class="api-key-banner-dismiss" title="Dismiss">&times;</button>
+        <div class="api-key-banner-text">Add your API key to enable Payment Plan Approval Amounts and Application Links. <a href="https://provider.withcherry.com/settings/api-keys" target="_blank" style="color: #92400e; text-decoration: underline;">Generate a key in your Cherry Provider Settings</a><br><br>You can re-use the same API key from other times you've installed this Cherry integration extension.</div>
+        <div class="api-key-input-row">
+          <input id="api-key-banner-input" type="password" class="form-input" placeholder="Enter your API key">
+          <button id="api-key-banner-save" class="btn btn-primary">Save</button>
+        </div>
+        <div id="api-key-banner-success" class="api-key-success">API key saved!</div>
+      </div>
+
+      <button id="send-application-link" class="sidepanel-primary-action" type="button">Send Application Link</button>
+
+      <!-- Payment History -->
+      <div id="payment-history" class="payment-history" style="display: none;">
+        <div id="payment-history-topbar" class="payment-history-topbar">
+          <button id="payment-history-back" class="payment-history-back" type="button" title="Back" aria-label="Back">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <span id="payment-history-title" class="payment-history-title">Transactions</span>
+        </div>
+
+        <div id="payment-history-actions-view">
+          <span id="payment-history-action-count" style="display: none;">0</span>
+          <div class="payment-action-header">
+            <h2 class="payment-action-title">Action Items</h2>
+            <div id="payment-history-action-tabs" class="payment-action-tabs" role="tablist" aria-label="Action items">
+              <button id="payment-history-post-tab" class="payment-action-tab is-active" type="button" role="tab" aria-selected="true" data-action-tab="sync_failed">Post to PIMS</button>
+              <button id="payment-history-finalize-tab" class="payment-action-tab" type="button" role="tab" aria-selected="false" data-action-tab="amount_editable">Finalize Checkout</button>
+            </div>
+          </div>
+          <div id="payment-history-action-content"></div>
+          <div class="payment-history-link-list">
+            <button id="payment-history-view-all" class="payment-history-link" type="button">
+              <svg class="payment-history-link-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M6 7h12M6 12h12M6 17h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <span>All Transactions</span>
+              <span class="payment-history-link-chevron" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="none">
+                  <path d="M7 3.75L13.25 10L7 16.25" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </button>
+            <button id="payment-history-settings" class="payment-history-link" type="button">
+              <svg class="payment-history-link-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7Z" stroke="currentColor" stroke-width="2"/>
+                <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.04.04a2 2 0 0 1-1.41 3.41 2 2 0 0 1-1.42-.59l-.04-.04a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V21a2 2 0 1 1-4 0v-.06a1.7 1.7 0 0 0-1.03-1.56 1.7 1.7 0 0 0-1.87.34l-.04.04a2 2 0 1 1-2.83-2.83l.04-.04A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1.03H3a2 2 0 1 1 0-4h.06A1.7 1.7 0 0 0 4.62 8.9a1.7 1.7 0 0 0-.34-1.87l-.04-.04a2 2 0 1 1 2.83-2.83l.04.04a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1-1.54V3a2 2 0 1 1 4 0v.06a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.87-.34l.04-.04a2 2 0 1 1 2.83 2.83l-.04.04a1.7 1.7 0 0 0-.34 1.87V9a1.7 1.7 0 0 0 1.56 1H21a2 2 0 1 1 0 4h-.06A1.7 1.7 0 0 0 19.4 15Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+              <span>Settings</span>
+              <span class="payment-history-link-chevron" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="none">
+                  <path d="M7 3.75L13.25 10L7 16.25" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <div id="payment-history-all-view" style="display: none;">
+          <div class="payment-history-summary">
+            <div class="payment-history-period-wrap">
+              <select id="reconciliation-range" class="payment-history-period">
+                <option value="today" selected>Today</option>
+              </select>
+            </div>
+            <div id="reconciliation-custom-dates" style="display: none; gap: 8px; margin-top: 12px;">
+              <input type="date" id="recon-start-date" class="form-input" style="flex:1; padding:8px 10px; font-size:12px;">
+              <input type="date" id="recon-end-date" class="form-input" style="flex:1; padding:8px 10px; font-size:12px;">
+              <button id="recon-apply-custom" class="btn btn-primary" style="width:auto; padding:8px 12px; font-size:12px;">Apply</button>
+            </div>
+            <div id="reconciliation-summary" style="display: none;"></div>
+            <div id="payment-history-total" class="payment-history-total">$0.00</div>
+            <div class="payment-history-total-label">Gross Sales</div>
+          </div>
+
+          <div id="payment-history-filters" style="display: none; gap: 8px; margin-bottom: 16px;"></div>
+          <div id="payment-history-content"></div>
+          <div id="payment-history-pagination" style="display: none; margin-top: 8px; margin-bottom: 16px; text-align: center;">
+            <button id="payment-history-prev" class="btn btn-secondary" style="width: auto; padding: 6px 14px; font-size: 12px;" disabled>Prev</button>
+            <span id="payment-history-page-info" style="font-size: 12px; color: #6b7280; margin: 0 8px;"></span>
+            <button id="payment-history-next" class="btn btn-secondary" style="width: auto; padding: 6px 14px; font-size: 12px;">Next</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Settings View -->
+    <div id="settings-view" class="settings-view">
+      <div class="settings-panel">
+        <div class="settings-header">
+          <button id="settings-back" class="settings-back" title="Back" aria-label="Back">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <span class="settings-title">Settings</span>
+        </div>
+
+        <div class="settings-section connection-section">
+          <div class="settings-field" style="display: none;">
+            <label class="settings-label">Extension Status</label>
+            <span id="status-badge" class="status-badge active">
+              <span class="status-dot active"></span>
+              <span id="status-text">ON</span>
+            </span>
+          </div>
+
+          <div id="terminal-row" class="settings-field">
+            <label class="settings-label">Default Terminal</label>
+            <div class="settings-field-main">
+              <span id="terminal-display">
+                <span id="terminal-name">Not selected</span>
+                <a id="terminal-action" href="#">Select</a>
+                <span id="terminal-info" style="display: none;">ⓘ</span>
+                <a id="terminal-refresh" href="#" title="Refresh terminal status" style="display: none;">&#8635;</a>
+              </span>
+              <select id="terminal-select" class="form-input" style="display: none;"></select>
+            </div>
+            <span id="terminal-error" style="display: none;"></span>
+          </div>
+
+          <div id="pims-status-row" class="settings-field">
+            <label class="settings-label">PIMS</label>
+            <div class="settings-field-main">
+              <span id="pims-badge" class="status-badge none">
+                <span class="status-dot none"></span>
+                <span id="pims-text">None</span>
+              </span>
+            </div>
+          </div>
+
+          <div id="settings-api-key-display" style="display: none;"></div>
+          <div id="settings-api-key-edit-row" style="display: none;">
+            <input id="settings-api-key-input" type="password">
+            <button id="settings-api-key-save" type="button">Save</button>
+          </div>
+          <span id="settings-api-key-value" style="display: none;"></span>
+          <button id="settings-api-key-edit" type="button" style="display: none;">Edit</button>
+          <button id="settings-api-key-clear" type="button" style="display: none;">Clear</button>
+          <div id="settings-api-key-success" style="display: none;"></div>
+        </div>
+
+        <div id="settings-demo-mode-row" class="settings-section settings-toggle-row">
+          <div class="settings-toggle-copy">
+            <div class="settings-toggle-title">Demo mode</div>
+            <div class="settings-toggle-description">Hide Shepherd clinic and signed-in user identity in dev builds.</div>
+          </div>
+          <label class="settings-switch" title="Toggle demo mode">
+            <input id="settings-demo-mode-toggle" type="checkbox">
+            <span class="settings-switch-slider"></span>
+          </label>
+        </div>
+
+        <div id="settings-shepherd-auto-select-row" class="settings-section settings-toggle-row">
+          <div class="settings-toggle-copy">
+            <div class="settings-toggle-title">Auto-select Cherry card payment</div>
+            <div class="settings-toggle-description">On Shepherd payment pages, turn off Shepherd Pay and choose a Cherry card/POS payment type instead of Payment Plans.</div>
+          </div>
+          <label class="settings-switch" title="Toggle Shepherd Cherry card auto-select">
+            <input id="settings-shepherd-auto-select-toggle" type="checkbox">
+            <span class="settings-switch-slider"></span>
+          </label>
+        </div>
+
+        <div class="settings-account-footer">
+          <button id="sign-out-btn" class="btn btn-secondary">
+            Log Out
+          </button>
+          <div class="settings-version">Version: 4.2-v122</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script>
+(() => {
+  const userView = document.getElementById('user-view');
+  const paymentHistory = document.getElementById('payment-history');
+  const primaryAction = document.getElementById('send-application-link');
+  const actionsView = document.getElementById('payment-history-actions-view');
+  const allView = document.getElementById('payment-history-all-view');
+  const topbar = document.getElementById('payment-history-topbar');
+  const back = document.getElementById('payment-history-back');
+  const title = document.getElementById('payment-history-title');
+  const actionContent = document.getElementById('payment-history-action-content');
+  const allContent = document.getElementById('payment-history-content');
+  const total = document.getElementById('payment-history-total');
+  const footer = document.querySelector('.footer');
+  const settingsView = document.getElementById('settings-view');
+  const toolbar = document.createElement('div');
+  toolbar.className = 'preview-toolbar';
+  toolbar.innerHTML = '<button data-state="actions">Actions</button><button data-state="all">All</button><button data-state="empty">Empty</button><button data-state="settings">Settings</button>';
+  document.body.appendChild(toolbar);
+  document.body.classList.add('preview-mode');
+  document.getElementById('debug-banner')?.remove();
+  document.getElementById('debug-api-log')?.remove();
+  document.getElementById('api-key-banner')?.remove();
+
+  const chevron = '<span class="payment-card-chevron" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none"><path d="M7 3.75L13.25 10L7 16.25" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
+  const card = ({ amount, note, meta, action, posted, noChevron, hideAction, context, methodRef }) => '<div class="payment-card"><div class="payment-card-summary"><div class="payment-card-row"><div class="payment-card-main"><div class="payment-card-amount-line"><span class="payment-card-amount">' + amount + '</span>' + (note ? '<span class="payment-card-note">' + note + '</span>' : '') + '</div>' + (context ? '<div class="payment-card-context">' + context + '</div><div class="payment-card-method-ref">' + methodRef + '</div>' : '<div class="payment-card-meta">' + meta + '</div>') + '</div><div style="display:flex;align-items:center;gap:8px;">' + (hideAction ? '' : posted ? '<span class="payment-posted-badge">Posted</span>' : '<button class="payment-card-button' + (action === 'Mark Posted' ? ' mark-preview-posted' : '') + '" type="button">' + action + '</button>') + (noChevron ? '' : chevron) + '</div></div></div></div>';
+
+  const postHtml = '<section class="payment-action-section"><p class="payment-action-description">These transactions failed to post to Vetspire. Check each one in Vetspire, then mark posted here.</p>'
+    + card({ amount: '$320.00', context: '<span class="payment-card-context-name">James Smith</span> on May 15, 2026', methodRef: 'Payment Plan · TER_ORG-826', action: 'Mark Posted', noChevron: true })
+    + card({ amount: '$560.00', context: '<span class="payment-card-context-name">Emily Johnson</span> on May 10, 2026', methodRef: 'Payment Plan · TER_ORG-937', action: 'Mark Posted', noChevron: true })
+    + '</section>';
+
+  const finalizeHtml = '<section class="payment-action-section">'
+    + card({ amount: '$450.00', note: 'Editable until May 29', meta: 'Omar Hassan', action: 'Edit Amount' })
+    + card({ amount: '$720.00', note: 'Editable until May 29', meta: 'Alice Dubois', action: 'Edit Amount' })
+    + '</section>';
+
+  const emptyPostHtml = '<div class="payment-history-empty"><div class="payment-history-empty-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M26.25 9.75L13.25 22.75L6.25 15.75" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="payment-history-empty-copy"><div class="payment-history-empty-title">All Transactions Posted in Vetspire</div><div class="payment-history-empty-text">You&rsquo;re all caught up.</div></div></div>';
+
+  const emptyFinalizeHtml = '<div class="payment-history-empty"><div class="payment-history-empty-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M26.25 9.75L13.25 22.75L6.25 15.75" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="payment-history-empty-copy"><div class="payment-history-empty-title">All Checkouts Finalized</div><div class="payment-history-empty-text">You&rsquo;re all caught up.</div></div></div>';
+
+  const allHtml = card({ amount: '$932.00', note: 'Today', meta: 'Alice Dubois · Card Payment', action: 'SYNCED', posted: true })
+    + card({ amount: '$450.00', note: 'Today', meta: 'Omar Hassan · Payment Plan', action: 'SYNCED', posted: true })
+    + card({ amount: '-$62.00', note: 'Today', meta: 'Raj Patel · Refund', action: 'SYNCED', posted: true });
+
+  const postTab = document.getElementById('payment-history-post-tab');
+  const finalizeTab = document.getElementById('payment-history-finalize-tab');
+  let previewActionTab = 'sync_failed';
+  let previewEmpty = false;
+
+  const updatePreviewIndicator = () => {
+    const tabs = document.getElementById('payment-history-action-tabs');
+    const activeTab = previewActionTab === 'sync_failed' ? postTab : finalizeTab;
+    if (!tabs || !activeTab) return;
+    requestAnimationFrame(() => {
+      tabs.style.setProperty('--payment-action-indicator-x', activeTab.offsetLeft + 'px');
+      tabs.style.setProperty('--payment-action-indicator-width', activeTab.offsetWidth + 'px');
+    });
+  };
+
+  const updatePreviewTabs = () => {
+    if (postTab) {
+      postTab.textContent = 'Post to Vetspire';
+      postTab.classList.toggle('is-active', previewActionTab === 'sync_failed');
+      postTab.setAttribute('aria-selected', String(previewActionTab === 'sync_failed'));
+    }
+    if (finalizeTab) {
+      finalizeTab.classList.toggle('is-active', previewActionTab === 'amount_editable');
+      finalizeTab.setAttribute('aria-selected', String(previewActionTab === 'amount_editable'));
+    }
+    updatePreviewIndicator();
+  };
+
+  window.addEventListener('resize', updatePreviewIndicator);
+
+  const renderActionPreview = () => {
+    updatePreviewTabs();
+    actionContent.innerHTML = previewEmpty
+      ? (previewActionTab === 'sync_failed' ? emptyPostHtml : emptyFinalizeHtml)
+      : (previewActionTab === 'sync_failed' ? postHtml : finalizeHtml);
+    attachPreviewMarkPosted();
+  };
+
+  let previewTabTransitionTimer = null;
+  const renderActionPreviewWithTransition = () => {
+    if (previewTabTransitionTimer) clearTimeout(previewTabTransitionTimer);
+    actionContent.classList.add('is-transitioning');
+    previewTabTransitionTimer = setTimeout(() => {
+      previewTabTransitionTimer = null;
+      renderActionPreview();
+      requestAnimationFrame(() => actionContent.classList.remove('is-transitioning'));
+    }, 180);
+  };
+
+  let previewToastTimer = null;
+  const showPreviewToast = (cardEl) => {
+    let toast = document.getElementById('payment-history-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'payment-history-toast';
+      toast.className = 'payment-toast';
+      toast.setAttribute('role', 'status');
+      toast.setAttribute('aria-live', 'polite');
+      document.body.appendChild(toast);
+    }
+    if (previewToastTimer) clearTimeout(previewToastTimer);
+    toast.innerHTML = '<span class="payment-toast-message">Transaction marked as posted.</span><button type="button">Undo</button>';
+    toast.querySelector('button').addEventListener('click', () => {
+      if (previewToastTimer) clearTimeout(previewToastTimer);
+      cardEl.classList.remove('is-removing');
+      toast.classList.remove('is-visible');
+      toast.replaceChildren();
+    }, { once: true });
+    requestAnimationFrame(() => toast.classList.add('is-visible'));
+    previewToastTimer = setTimeout(() => {
+      toast.classList.remove('is-visible');
+      toast.replaceChildren();
+    }, 4500);
+  };
+
+  const attachPreviewMarkPosted = () => {
+    document.querySelectorAll('.mark-preview-posted').forEach((button) => {
+      button.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const cardEl = button.closest('.payment-card');
+        if (!cardEl) return;
+        cardEl.classList.add('is-removing');
+        showPreviewToast(cardEl);
+      });
+    });
+  };
+
+  document.getElementById('terminal-display').style.display = 'none';
+  const terminalSelect = document.getElementById('terminal-select');
+  terminalSelect.innerHTML = '<option value="tmr_burak" selected>Burak Terminal</option><option value="tmr_front">Front Desk Terminal</option><option value="tmr_room">Room 2 Terminal</option>';
+  terminalSelect.style.display = 'block';
+  document.getElementById('pims-text').textContent = 'AviMark';
+  document.getElementById('settings-api-key-edit-row').style.display = 'none';
+  document.getElementById('settings-api-key-display').style.display = 'none';
+  document.getElementById('settings-api-key-value').textContent = '••••••••••••••••';
+
+  const setState = (state) => {
+    userView.style.display = state === 'settings' ? 'none' : 'block';
+    settingsView.style.display = state === 'settings' ? 'block' : 'none';
+    paymentHistory.style.display = state === 'settings' ? 'none' : 'flex';
+    if (primaryAction) primaryAction.style.display = (state === 'actions' || state === 'empty') ? 'block' : 'none';
+    if (footer) footer.style.display = state === 'settings' ? 'none' : 'block';
+    toolbar.querySelectorAll('button').forEach(btn => btn.classList.toggle('active', btn.dataset.state === state));
+    if (state === 'actions' || state === 'empty') {
+      topbar.style.display = 'none';
+      actionsView.style.display = 'flex';
+      allView.style.display = 'none';
+      previewEmpty = state === 'empty';
+      renderActionPreview();
+    } else if (state === 'all') {
+      topbar.style.display = 'flex';
+      back.style.display = 'inline-flex';
+      title.textContent = 'All transactions';
+      actionsView.style.display = 'none';
+      allView.style.display = 'block';
+      total.textContent = '$1,320.00';
+      allContent.innerHTML = allHtml;
+    }
+  };
+
+  document.querySelectorAll('[data-action-tab]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const nextTab = button.dataset.actionTab || 'sync_failed';
+      if (nextTab === previewActionTab) return;
+      previewActionTab = nextTab;
+      updatePreviewTabs();
+      renderActionPreviewWithTransition();
+    });
+  });
+  document.getElementById('payment-history-view-all')?.addEventListener('click', () => setState('all'));
+  document.getElementById('payment-history-settings')?.addEventListener('click', () => setState('settings'));
+  document.getElementById('settings-back')?.addEventListener('click', () => setState('actions'));
+  back?.addEventListener('click', () => setState('actions'));
+  toolbar.addEventListener('click', (event) => {
+    const btn = event.target.closest('button[data-state]');
+    if (btn) setState(btn.dataset.state);
+  });
+  setState('actions');
+})();
+</script>
+<style>
+  .preview-mode { background: #d7dce0; }
+  .preview-mode .container { box-shadow: 0 0 0 1px rgba(14,32,47,0.08); }
+  .preview-toolbar { position: fixed; right: 8px; top: 8px; z-index: 9999; display: flex; flex-direction: column; gap: 4px; padding: 4px; border-radius: 16px; background: rgba(14,32,47,0.92); box-shadow: 0 8px 24px rgba(14,32,47,0.22); }
+  .preview-toolbar button { width: 64px; height: 28px; padding: 0 8px; border: 0; border-radius: 999px; background: transparent; color: #fff; font: 700 12px/16px 'Open Sans', Arial, sans-serif; cursor: pointer; }
+  .preview-toolbar button.active { background: #ffffff; color: #0e202f; }
+</style>
+</body>
+</html>

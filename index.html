@@ -897,6 +897,14 @@
       letter-spacing: 0;
     }
 
+    .payment-card-date-label {
+      flex: 0 0 auto;
+      font-size: 12px;
+      line-height: 16px;
+      font-weight: 700;
+      letter-spacing: 0.04px;
+    }
+
 
     .payment-card-context {
       margin-top: 8px;
@@ -1709,7 +1717,7 @@
   document.getElementById('api-key-banner')?.remove();
 
   const chevron = '<span class="payment-card-chevron" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none"><path d="M7 3.75L13.25 10L7 16.25" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
-  const card = ({ amount, note, meta, action, posted, noChevron, hideAction, context, methodRef }) => '<div class="payment-card"><div class="payment-card-summary"><div class="payment-card-row"><div class="payment-card-main"><div class="payment-card-amount-line"><span class="payment-card-amount">' + amount + '</span>' + (note ? '<span class="payment-card-note">' + note + '</span>' : '') + '</div>' + (context ? '<div class="payment-card-context">' + context + '</div><div class="payment-card-method-ref">' + methodRef + '</div>' : '<div class="payment-card-meta">' + meta + '</div>') + '</div><div style="display:flex;align-items:center;gap:8px;">' + (hideAction ? '' : posted ? '<span class="payment-posted-badge">Posted</span>' : '<button class="payment-card-button' + (action === 'Mark Posted' ? ' mark-preview-posted' : '') + '" type="button">' + action + '</button>') + (noChevron ? '' : chevron) + '</div></div></div></div>';
+  const card = ({ amount, note, meta, action, posted, noChevron, hideAction, context, methodRef, dateLabel }) => '<div class="payment-card"><div class="payment-card-summary"><div class="payment-card-row"><div class="payment-card-main"><div class="payment-card-amount-line"><span class="payment-card-amount">' + amount + '</span>' + (note ? '<span class="payment-card-note' + (dateLabel ? ' payment-card-date-label' : '') + '">' + note + '</span>' : '') + '</div>' + (context ? '<div class="payment-card-context">' + context + '</div><div class="payment-card-method-ref">' + methodRef + '</div>' : '<div class="payment-card-meta">' + meta + '</div>') + '</div><div style="display:flex;align-items:center;gap:8px;">' + (hideAction ? '' : posted ? '<span class="payment-posted-badge">Posted</span>' : '<button class="payment-card-button' + (action === 'Mark Posted' ? ' mark-preview-posted' : '') + '" type="button">' + action + '</button>') + (noChevron ? '' : chevron) + '</div></div></div></div>';
 
   const postHtml = '<section class="payment-action-section"><p class="payment-action-description">These transactions failed to post to Vetspire. Check each one in Vetspire, then mark posted here.</p>'
     + card({ amount: '$320.00', context: '<span class="payment-card-context-name">James Smith</span> on May 15, 2026', methodRef: 'Payment Plan · TER_ORG-826', action: 'Mark Posted', noChevron: true })
@@ -1717,8 +1725,8 @@
     + '</section>';
 
   const finalizeHtml = '<section class="payment-action-section">'
-    + card({ amount: '$450.00', note: 'Editable until May 29', meta: 'Omar Hassan', action: 'Edit Amount' })
-    + card({ amount: '$720.00', note: 'Editable until May 29', meta: 'Alice Dubois', action: 'Edit Amount' })
+    + card({ amount: '$450.00', note: 'May 27, 2026', dateLabel: true, context: '<span class="payment-card-context-name">James Smith</span> on May 15, 2026', methodRef: 'Payment Plan · TER_ORG-826', action: 'Edit Amount' })
+    + card({ amount: '$720.00', note: 'May 29, 2026', dateLabel: true, context: '<span class="payment-card-context-name">Alice Dubois</span> on May 18, 2026', methodRef: 'Payment Plan · TER_ORG-338', action: 'Edit Amount' })
     + '</section>';
 
   const emptyPostHtml = '<div class="payment-history-empty"><div class="payment-history-empty-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M26.25 9.75L13.25 22.75L6.25 15.75" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="payment-history-empty-copy"><div class="payment-history-empty-title">All Transactions Posted in Vetspire</div><div class="payment-history-empty-text">You&rsquo;re all caught up.</div></div></div>';
